@@ -13,6 +13,20 @@ public class CASoundEvents {
 	public static final RegistryObject<SoundEvent> ROBO_HURT = SOUND_EVENTS.register("entity.robo.hurt", () -> new SoundEvent(ChaosAwakens.prefix("entity.robo.hurt")));
 	public static final RegistryObject<SoundEvent> ROBO_DEATH = SOUND_EVENTS.register("entity.robo.death", () -> new SoundEvent(ChaosAwakens.prefix("entity.robo.death")));
 
+	// Robo Jeffery
+	public static final RegistryObject<SoundEvent> ROBO_JEFFERY_IDLE = SOUND_EVENTS.register("entity.robo_jeffery.idle", () -> new SoundEvent(ChaosAwakens.prefix("entity.robo_jeffery.idle")));
+	public static final RegistryObject<SoundEvent> ROBO_JEFFERY_WALK = SOUND_EVENTS.register("entity.robo_jeffery.walk", () -> new SoundEvent(ChaosAwakens.prefix("entity.robo_jeffery.walk")));
+	public static final RegistryObject<SoundEvent> ROBO_JEFFERY_JEFFERY_PUNCH = SOUND_EVENTS.register("entity.robo_jeffery.jeffery_punch", () -> new SoundEvent(ChaosAwakens.prefix("entity.robo_jeffery.jeffery_punch")));
+	public static final RegistryObject<SoundEvent> ROBO_JEFFERY_SEISMIC_SLAM = SOUND_EVENTS.register("entity.robo_jeffery.seismic_slam", () -> new SoundEvent(ChaosAwakens.prefix("entity.robo_jeffery.seismic_slam")));
+	public static final RegistryObject<SoundEvent> ROBO_JEFFERY_PISTON_LEAP_LAUNCH = SOUND_EVENTS.register("entity.robo_jeffery.piston_leap_launch", () -> new SoundEvent(ChaosAwakens.prefix("entity.robo_jeffery.piston_leap_launch")));
+	public static final RegistryObject<SoundEvent> ROBO_JEFFERY_PISTON_LEAP_LAND = SOUND_EVENTS.register("entity.robo_jeffery.piston_leap_land", () -> new SoundEvent(ChaosAwakens.prefix("entity.robo_jeffery.piston_leap_land")));
+	public static final RegistryObject<SoundEvent> ROBO_JEFFERY_DEATH = SOUND_EVENTS.register("entity.robo_jeffery.death", () -> new SoundEvent(ChaosAwakens.prefix("entity.robo_jeffery.death")));
+	public static final RegistryObject<SoundEvent> ROBO_JEFFERY_DAMAGE_V1 = SOUND_EVENTS.register("entity.robo_jeffery.damage_v1", () -> new SoundEvent(ChaosAwakens.prefix("entity.robo_jeffery.damage_v1")));
+	public static final RegistryObject<SoundEvent> ROBO_JEFFERY_DAMAGE_V2 = SOUND_EVENTS.register("entity.robo_jeffery.damage_v2", () -> new SoundEvent(ChaosAwakens.prefix("entity.robo_jeffery.damage_v2")));
+	public static final RegistryObject<SoundEvent> ROBO_JEFFERY_DAMAGE_V3 = SOUND_EVENTS.register("entity.robo_jeffery.damage_v3", () -> new SoundEvent(ChaosAwakens.prefix("entity.robo_jeffery.damage_v3")));
+	public static final RegistryObject<SoundEvent> ROBO_JEFFERY_DAMAGE_V4 = SOUND_EVENTS.register("entity.robo_jeffery.damage_v4", () -> new SoundEvent(ChaosAwakens.prefix("entity.robo_jeffery.damage_v4")));
+
+	// Robo Pounder
 	public static final RegistryObject<SoundEvent> ROBO_POUNDER_IDLE = SOUND_EVENTS.register("entity.robo_pounder.idle", () -> new SoundEvent(ChaosAwakens.prefix("entity.robo_pounder.idle")));
 	public static final RegistryObject<SoundEvent> ROBO_POUNDER_WALK = SOUND_EVENTS.register("entity.robo_pounder.walk", () -> new SoundEvent(ChaosAwakens.prefix("entity.robo_pounder.walk")));
 	public static final RegistryObject<SoundEvent> ROBO_POUNDER_TAUNT = SOUND_EVENTS.register("entity.robo_pounder.taunt", () -> new SoundEvent(ChaosAwakens.prefix("entity.robo_pounder.taunt")));
@@ -35,61 +49,36 @@ public class CASoundEvents {
 	public static final RegistryObject<SoundEvent> ROBO_POUNDER_DAMAGE_V3 = SOUND_EVENTS.register("entity.robo_pounder.damage_v3", () -> new SoundEvent(ChaosAwakens.prefix("entity.robo_pounder.damage_v3")));
 	public static final RegistryObject<SoundEvent> ROBO_POUNDER_DAMAGE_V4 = SOUND_EVENTS.register("entity.robo_pounder.damage_v4", () -> new SoundEvent(ChaosAwakens.prefix("entity.robo_pounder.damage_v4")));
 
+	// Emerald Gator
 	public static final RegistryObject<SoundEvent> EMERALD_GATOR_WALK = SOUND_EVENTS.register("entity.emerald_gator.walk", () -> new SoundEvent(ChaosAwakens.prefix("entity.emerald_gator.walk")));
 	public static final RegistryObject<SoundEvent> EMERALD_GATOR_ATTACK = SOUND_EVENTS.register("entity.emerald_gator.attack", () -> new SoundEvent(ChaosAwakens.prefix("entity.emerald_gator.attack")));
 	public static final RegistryObject<SoundEvent> EMERALD_GATOR_HURT = SOUND_EVENTS.register("entity.emerald_gator.hurt", () -> new SoundEvent(ChaosAwakens.prefix("entity.emerald_gator.hurt")));
 	public static final RegistryObject<SoundEvent> EMERALD_GATOR_DEATH = SOUND_EVENTS.register("entity.emerald_gator.death", () -> new SoundEvent(ChaosAwakens.prefix("entity.emerald_gator.death")));
 
+	// Hercules Beetle
 	public static final RegistryObject<SoundEvent> HERCULES_BEETLE_WALK = SOUND_EVENTS.register("entity.hercules_beetle.walk", () -> new SoundEvent(ChaosAwakens.prefix("entity.hercules_beetle.walk")));
 	public static final RegistryObject<SoundEvent> HERCULES_BEETLE_ATTACK = SOUND_EVENTS.register("entity.hercules_beetle.attack", () -> new SoundEvent(ChaosAwakens.prefix("entity.hercules_beetle.attack")));
 	public static final RegistryObject<SoundEvent> HERCULES_BEETLE_HURT = SOUND_EVENTS.register("entity.hercules_beetle.hurt", () -> new SoundEvent(ChaosAwakens.prefix("entity.hercules_beetle.hurt")));
 	public static final RegistryObject<SoundEvent> HERCULES_BEETLE_DEATH = SOUND_EVENTS.register("entity.hercules_beetle.death", () -> new SoundEvent(ChaosAwakens.prefix("entity.hercules_beetle.death")));
 	public static final RegistryObject<SoundEvent> HERCULES_BEETLE_SWING = SOUND_EVENTS.register("entity.hercules_beetle.swing", () -> new SoundEvent(ChaosAwakens.prefix("entity.hercules_beetle.swing")));
 	public static final RegistryObject<SoundEvent> HERCULES_BEETLE_FLAP = SOUND_EVENTS.register("entity.hercules_beetle.flap", () -> new SoundEvent(ChaosAwakens.prefix("entity.hercules_beetle.flap")));
-	
-	public static final RegistryObject<SoundEvent> ACACIA_ENT_WALK = SOUND_EVENTS.register("entity.acacia_ent.walk", () -> new SoundEvent(ChaosAwakens.prefix("entity.ent.walk")));
-	public static final RegistryObject<SoundEvent> BIRCH_ENT_WALK = SOUND_EVENTS.register("entity.birch_ent.walk", () -> new SoundEvent(ChaosAwakens.prefix("entity.ent.walk")));
-	public static final RegistryObject<SoundEvent> CRIMSON_ENT_WALK = SOUND_EVENTS.register("entity.crimson_ent.walk", () -> new SoundEvent(ChaosAwakens.prefix("entity.ent.walk")));
-	public static final RegistryObject<SoundEvent> DARK_OAK_ENT_WALK = SOUND_EVENTS.register("entity.dark_oak_ent.walk", () -> new SoundEvent(ChaosAwakens.prefix("entity.ent.walk")));
-	public static final RegistryObject<SoundEvent> JUNGLE_ENT_WALK = SOUND_EVENTS.register("entity.jungle_ent.walk", () -> new SoundEvent(ChaosAwakens.prefix("entity.ent.walk")));
-	public static final RegistryObject<SoundEvent> OAK_ENT_WALK = SOUND_EVENTS.register("entity.oak_ent.walk", () -> new SoundEvent(ChaosAwakens.prefix("entity.ent.walk")));
-	public static final RegistryObject<SoundEvent> SPRUCE_ENT_WALK = SOUND_EVENTS.register("entity.spruce_ent.walk", () -> new SoundEvent(ChaosAwakens.prefix("entity.ent.walk")));
-	public static final RegistryObject<SoundEvent> WARPED_ENT_WALK = SOUND_EVENTS.register("entity.warped_ent.walk", () -> new SoundEvent(ChaosAwakens.prefix("entity.ent.walk")));
-	public static final RegistryObject<SoundEvent> ACACIA_ENT_ATTACK = SOUND_EVENTS.register("entity.acacia_ent.attack", () -> new SoundEvent(ChaosAwakens.prefix("entity.ent.attack")));
-	public static final RegistryObject<SoundEvent> BIRCH_ENT_ATTACK = SOUND_EVENTS.register("entity.birch_ent.attack", () -> new SoundEvent(ChaosAwakens.prefix("entity.ent.attack")));
-	public static final RegistryObject<SoundEvent> CRIMSON_ENT_ATTACK = SOUND_EVENTS.register("entity.crimson_ent.attack", () -> new SoundEvent(ChaosAwakens.prefix("entity.ent.attack")));
-	public static final RegistryObject<SoundEvent> DARK_OAK_ENT_ATTACK = SOUND_EVENTS.register("entity.dark_oak_ent.attack", () -> new SoundEvent(ChaosAwakens.prefix("entity.ent.attack")));
-	public static final RegistryObject<SoundEvent> JUNGLE_ENT_ATTACK = SOUND_EVENTS.register("entity.jungle_ent.attack", () -> new SoundEvent(ChaosAwakens.prefix("entity.ent.attack")));
-	public static final RegistryObject<SoundEvent> OAK_ENT_ATTACK = SOUND_EVENTS.register("entity.oak_ent.attack", () -> new SoundEvent(ChaosAwakens.prefix("entity.ent.attack")));
-	public static final RegistryObject<SoundEvent> SPRUCE_ENT_ATTACK = SOUND_EVENTS.register("entity.spruce_ent.attack", () -> new SoundEvent(ChaosAwakens.prefix("entity.ent.attack")));
-	public static final RegistryObject<SoundEvent> WARPED_ENT_ATTACK = SOUND_EVENTS.register("entity.warped_ent.attack", () -> new SoundEvent(ChaosAwakens.prefix("entity.ent.attack")));
-	public static final RegistryObject<SoundEvent> ACACIA_ENT_HURT = SOUND_EVENTS.register("entity.acacia_ent.hurt", () -> new SoundEvent(ChaosAwakens.prefix("entity.ent.hurt")));
-	public static final RegistryObject<SoundEvent> BIRCH_ENT_HURT = SOUND_EVENTS.register("entity.birch_ent.hurt", () -> new SoundEvent(ChaosAwakens.prefix("entity.ent.hurt")));
-	public static final RegistryObject<SoundEvent> CRIMSON_ENT_HURT = SOUND_EVENTS.register("entity.crimson_ent.hurt", () -> new SoundEvent(ChaosAwakens.prefix("entity.ent.hurt")));
-	public static final RegistryObject<SoundEvent> DARK_OAK_ENT_HURT = SOUND_EVENTS.register("entity.dark_oak_ent.hurt", () -> new SoundEvent(ChaosAwakens.prefix("entity.ent.hurt")));
-	public static final RegistryObject<SoundEvent> JUNGLE_ENT_HURT = SOUND_EVENTS.register("entity.jungle_ent.hurt", () -> new SoundEvent(ChaosAwakens.prefix("entity.ent.hurt")));
-	public static final RegistryObject<SoundEvent> OAK_ENT_HURT = SOUND_EVENTS.register("entity.oak_ent.hurt", () -> new SoundEvent(ChaosAwakens.prefix("entity.ent.hurt")));
-	public static final RegistryObject<SoundEvent> SPRUCE_ENT_HURT = SOUND_EVENTS.register("entity.spruce_ent.hurt", () -> new SoundEvent(ChaosAwakens.prefix("entity.ent.hurt")));
-	public static final RegistryObject<SoundEvent> WARPED_ENT_HURT = SOUND_EVENTS.register("entity.warped_ent.hurt", () -> new SoundEvent(ChaosAwakens.prefix("entity.ent.hurt")));
-	public static final RegistryObject<SoundEvent> ACACIA_ENT_DEATH = SOUND_EVENTS.register("entity.acacia_ent.death", () -> new SoundEvent(ChaosAwakens.prefix("entity.ent.death")));
-	public static final RegistryObject<SoundEvent> BIRCH_ENT_DEATH = SOUND_EVENTS.register("entity.birch_ent.death", () -> new SoundEvent(ChaosAwakens.prefix("entity.ent.death")));
-	public static final RegistryObject<SoundEvent> CRIMSON_ENT_DEATH = SOUND_EVENTS.register("entity.crimson_ent.death", () -> new SoundEvent(ChaosAwakens.prefix("entity.ent.death")));
-	public static final RegistryObject<SoundEvent> DARK_OAK_ENT_DEATH = SOUND_EVENTS.register("entity.dark_oak_ent.death", () -> new SoundEvent(ChaosAwakens.prefix("entity.ent.death")));
-	public static final RegistryObject<SoundEvent> JUNGLE_ENT_DEATH = SOUND_EVENTS.register("entity.jungle_ent.death", () -> new SoundEvent(ChaosAwakens.prefix("entity.ent.death")));
-	public static final RegistryObject<SoundEvent> OAK_ENT_DEATH = SOUND_EVENTS.register("entity.oak_ent.death", () -> new SoundEvent(ChaosAwakens.prefix("entity.ent.death")));
-	public static final RegistryObject<SoundEvent> SPRUCE_ENT_DEATH = SOUND_EVENTS.register("entity.spruce_ent.death", () -> new SoundEvent(ChaosAwakens.prefix("entity.ent.death")));
-	public static final RegistryObject<SoundEvent> WARPED_ENT_DEATH = SOUND_EVENTS.register("entity.warped_ent.death", () -> new SoundEvent(ChaosAwakens.prefix("entity.ent.death")));
-	public static final RegistryObject<SoundEvent> ENT_DEATH = SOUND_EVENTS.register("entity.ent.death", () -> new SoundEvent(ChaosAwakens.prefix("entity.ent.death")));
+
+	// Ent Sounds
+	public static final RegistryObject<SoundEvent> ENT_IDLE = SOUND_EVENTS.register("entity.ent.idle", () -> new SoundEvent(ChaosAwakens.prefix("entity.ent.idle")));
 	public static final RegistryObject<SoundEvent> ENT_WALK = SOUND_EVENTS.register("entity.ent.walk", () -> new SoundEvent(ChaosAwakens.prefix("entity.ent.walk")));
-	public static final RegistryObject<SoundEvent> ENT_ATTACK = SOUND_EVENTS.register("entity.ent.attack", () -> new SoundEvent(ChaosAwakens.prefix("entity.ent.attack")));
-	public static final RegistryObject<SoundEvent> ENT_HURT = SOUND_EVENTS.register("entity.ent.hurt", () -> new SoundEvent(ChaosAwakens.prefix("entity.ent.hurt")));
-	
+	public static final RegistryObject<SoundEvent> ENT_TREE_PUNCH = SOUND_EVENTS.register("entity.ent.tree_punch", () -> new SoundEvent(ChaosAwakens.prefix("entity.ent.tree_punch")));
+	public static final RegistryObject<SoundEvent> ENT_ENT_SMASH = SOUND_EVENTS.register("entity.ent.ent_smash", () -> new SoundEvent(ChaosAwakens.prefix("entity.ent.ent_smash")));
+	public static final RegistryObject<SoundEvent> ENT_DEATH = SOUND_EVENTS.register("entity.ent.death", () -> new SoundEvent(ChaosAwakens.prefix("entity.ent.death")));
+	public static final RegistryObject<SoundEvent> ENT_DAMAGE = SOUND_EVENTS.register("entity.ent.damage", () -> new SoundEvent(ChaosAwakens.prefix("entity.ent.damage")));
+
+	// Whale Sounds
 	public static final RegistryObject<SoundEvent> WHALE_AMBIENT = SOUND_EVENTS.register("entity.whale.ambient", () -> new SoundEvent(ChaosAwakens.prefix("entity.whale.ambient")));
 	public static final RegistryObject<SoundEvent> WHALE_HURT = SOUND_EVENTS.register("entity.whale.hurt", () -> new SoundEvent(ChaosAwakens.prefix("entity.whale.hurt")));
 	public static final RegistryObject<SoundEvent> WHALE_DEATH = SOUND_EVENTS.register("entity.whale.death", () -> new SoundEvent(ChaosAwakens.prefix("entity.whale.death")));
 
 	public static final RegistryObject<SoundEvent> WASP_AMBIENT = SOUND_EVENTS.register("entity.wasp.ambient", () -> new SoundEvent(ChaosAwakens.prefix("entity.wasp.ambient")));
 
+	// Sky Moss Carpets
 	public static final RegistryObject<SoundEvent> SKY_MOSS_CARPET_BREAK = SOUND_EVENTS.register("block.sky_moss_carpet.break", () -> new SoundEvent(ChaosAwakens.prefix("block.sky_moss_carpet.break")));
 	public static final RegistryObject<SoundEvent> SKY_MOSS_CARPET_FALL = SOUND_EVENTS.register("block.sky_moss_carpet.fall", () -> new SoundEvent(ChaosAwakens.prefix("block.sky_moss_carpet.fall")));
 	public static final RegistryObject<SoundEvent> SKY_MOSS_CARPET_HIT = SOUND_EVENTS.register("block.sky_moss_carpet.hit", () -> new SoundEvent(ChaosAwakens.prefix("block.sky_moss_carpet.hit")));

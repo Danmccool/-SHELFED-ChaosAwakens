@@ -22,7 +22,7 @@ import software.bernie.geckolib3.core.manager.AnimationFactory;
 
 public class UltimateCrossbowBoltEntity extends AbstractArrowEntity implements IAnimatable, IAnimationTickable {
     private final AnimationFactory factory = new AnimationFactory(this);
-    private final AnimationController<UltimateCrossbowBoltEntity> mainController = new AnimationController<>(this, "ultimatecrossbowboltmaincontroller", 0, this::mainPredicate);
+    private final AnimationController<UltimateCrossbowBoltEntity> mainController = new AnimationController<>(this, "ultimatecrossbowboltmaincontroller", 1, this::mainPredicate);
     private static final AnimationBuilder MOVE_ANIM = new AnimationBuilder().addAnimation("Moving", ILoopType.EDefaultLoopTypes.LOOP);
     private static final AnimationBuilder HIT_ANIM = new AnimationBuilder().addAnimation("Hit", ILoopType.EDefaultLoopTypes.PLAY_ONCE);
     private static final AnimationBuilder STUCK_ANIM = new AnimationBuilder().addAnimation("Stuck", ILoopType.EDefaultLoopTypes.LOOP);
@@ -40,11 +40,7 @@ public class UltimateCrossbowBoltEntity extends AbstractArrowEntity implements I
     }
 
     private <T extends IAnimatable> PlayState mainPredicate(AnimationEvent<T> event) {
-        if (getDeltaMovement().length() > 0.01D) {
-            event.getController().setAnimation(MOVE_ANIM);
-            return PlayState.CONTINUE;
-        }
-
+        if (getDeltaMovement().length() > 0.01D) event.getController().setAnimation(MOVE_ANIM);
         return PlayState.CONTINUE;
     }
 

@@ -11,15 +11,18 @@ import io.github.chaosawakens.common.entity.ai.goals.hostile.AnimatableMeleeGoal
 import io.github.chaosawakens.common.entity.base.AnimatableBossEntity;
 import io.github.chaosawakens.common.entity.misc.AOEHitboxEntity;
 import io.github.chaosawakens.common.entity.misc.CAScreenShakeEntity;
+import io.github.chaosawakens.common.registry.CASoundEvents;
 import io.github.chaosawakens.common.registry.CATags;
 import io.github.chaosawakens.common.util.EntityUtil;
 import io.github.chaosawakens.common.util.MathUtil;
+import io.github.chaosawakens.common.util.SoundUtil;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import net.minecraft.entity.*;
 import net.minecraft.entity.ai.attributes.AttributeModifierMap;
 import net.minecraft.entity.ai.attributes.Attributes;
 import net.minecraft.entity.ai.goal.HurtByTargetGoal;
 import net.minecraft.entity.ai.goal.NearestAttackableTargetGoal;
+import net.minecraft.entity.ai.goal.RandomWalkingGoal;
 import net.minecraft.entity.merchant.villager.VillagerEntity;
 import net.minecraft.entity.monster.MonsterEntity;
 import net.minecraft.entity.passive.AnimalEntity;
@@ -31,6 +34,7 @@ import net.minecraft.network.datasync.EntityDataManager;
 import net.minecraft.particles.ParticleTypes;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.Direction.Axis;
+import net.minecraft.util.SoundEvent;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.BossInfo;
@@ -55,7 +59,7 @@ public class RoboJefferyEntity extends AnimatableBossEntity {
 	private final SingletonAnimationBuilder idleExtrasAnim = new SingletonAnimationBuilder(this, "Idle Extras", EDefaultLoopTypes.LOOP).setWrappedController(ambienceController);
 	private final SingletonAnimationBuilder lowHealthAnim = new SingletonAnimationBuilder(this, "Low Health", EDefaultLoopTypes.LOOP).setWrappedController(secondaryAmbienceController);
 	private final SingletonAnimationBuilder highHealthAnim = new SingletonAnimationBuilder(this, "Healthy", EDefaultLoopTypes.LOOP).setWrappedController(secondaryAmbienceController);
-	private final SingletonAnimationBuilder walkAnim = new SingletonAnimationBuilder(this, "Walk", EDefaultLoopTypes.LOOP);
+	private final SingletonAnimationBuilder walkAnim = new SingletonAnimationBuilder(this, "Walk", EDefaultLoopTypes.LOOP).setAnimSpeed(0.98D);
 	private final SingletonAnimationBuilder deathAnim = new SingletonAnimationBuilder(this, "Death", EDefaultLoopTypes.PLAY_ONCE).setWrappedController(attackController);
 	private final SingletonAnimationBuilder leftPunchAnim = new SingletonAnimationBuilder(this, "Left Punch Attack", EDefaultLoopTypes.PLAY_ONCE).setWrappedController(attackController);
 	private final SingletonAnimationBuilder rightPunchAnim = new SingletonAnimationBuilder(this, "Right Punch Attack", EDefaultLoopTypes.PLAY_ONCE).setWrappedController(attackController);
@@ -123,10 +127,10 @@ public class RoboJefferyEntity extends AnimatableBossEntity {
 	@Override
 	protected void registerGoals() {
 		this.goalSelector.addGoal(0, new AnimatableMoveToTargetGoal(this, 1, 3));
-		this.targetSelector.addGoal(0, new AnimatableMeleeGoal(this, null, PUNCH_ATTACK_ID, 140D, 15.6D, 18.1D, 20).pickBetweenAnimations(() -> leftPunchAnim, () -> rightPunchAnim));
-		this.targetSelector.addGoal(0, new RoboJefferyShockwaveGoal(this, () -> smashAnim, SMASH_ATTACK_ID, 20D, 25D, 18D, 5, 3, 40).expSpeed(3.1D));
-		this.targetSelector.addGoal(0, new RoboJefferyShockwaveGoal(this, () -> smashAnim, SMASH_ATTACK_ID, 20D, 25D, 18D, 260, (owner) -> getRandom().nextInt(10) == 0 && distanceTo(getTarget()) > getMeleeAttackReach(getTarget()) && MathUtil.isBetween(distanceTo(getTarget()), getMeleeAttackReach(getTarget()) + 1, getMeleeAttackReach(getTarget()) * 5)).expSpeed(3.1D));
-		this.targetSelector.addGoal(0, new RoboJefferyShockwaveGoal(this, () -> smashAnim, SMASH_ATTACK_ID, 20D, 25D, 18D, 30, (owner) -> getRandom().nextInt(5) == 0 && MathUtil.isBetween(distanceTo(getTarget()), 0, getMeleeAttackReach(getTarget()) * 5) && getTarget().getMaxHealth() >= 150.0F).expSpeed(3.1D));
+		this.targetSelector.addGoal(0, new AnimatableMeleeGoal(this, null, PUNCH_ATTACK_ID, 140D, 15.6D, 18.1D, 20).pickBetweenAnimations(() -> leftPunchAnim, () -> rightPunchAnim).soundOnStart(CASoundEvents.ROBO_JEFFERY_JEFFERY_PUNCH::get, 1.0F));
+		this.targetSelector.addGoal(0, new RoboJefferyShockwaveGoal(this, () -> smashAnim, SMASH_ATTACK_ID, 20D, 25D, 18D, 5, 3, 40).expSpeed(3.1D).soundOnStart(CASoundEvents.ROBO_JEFFERY_SEISMIC_SLAM::get, 1.0F));
+		this.targetSelector.addGoal(0, new RoboJefferyShockwaveGoal(this, () -> smashAnim, SMASH_ATTACK_ID, 20D, 25D, 18D, 260, (owner) -> getRandom().nextInt(10) == 0 && distanceTo(getTarget()) > getMeleeAttackReach(getTarget()) && MathUtil.isBetween(distanceTo(getTarget()), getMeleeAttackReach(getTarget()) + 1, getMeleeAttackReach(getTarget()) * 5)).expSpeed(3.1D).soundOnStart(CASoundEvents.ROBO_JEFFERY_SEISMIC_SLAM::get, 1.0F));
+		this.targetSelector.addGoal(0, new RoboJefferyShockwaveGoal(this, () -> smashAnim, SMASH_ATTACK_ID, 20D, 25D, 18D, 30, (owner) -> getRandom().nextInt(5) == 0 && MathUtil.isBetween(distanceTo(getTarget()), 0, getMeleeAttackReach(getTarget()) * 5) && getTarget().getMaxHealth() >= 150.0F).expSpeed(3.1D).soundOnStart(CASoundEvents.ROBO_JEFFERY_SEISMIC_SLAM::get, 1.0F));
 		this.targetSelector.addGoal(0, new AnimatableLeapGoal(this, () -> leapBeginAnim, () -> leapMidairAnim, () -> leapLandAnim, LEAP_ATTACK_ID, 1.37345D, 25.0D, (owner) -> getRandom().nextInt(17) == 0).setLandAction((affectedTarget) -> {
 			if (!(affectedTarget instanceof RoboJefferyEntity) && !affectedTarget.isAlliedTo(this)) {
 				affectedTarget.hurt(DamageSource.mobAttack(this), 20.0F);
@@ -136,7 +140,7 @@ public class RoboJefferyEntity extends AnimatableBossEntity {
 
 				affectedTarget.setDeltaMovement(kbMultiplier * Math.cos(targetAngle), affectedTarget.getDeltaMovement().normalize().y + 0.47115D, kbMultiplier * Math.sin(targetAngle));
 			}
-		}).setBlockBreakPredicate((targetBlock) -> !targetBlock.is(CATags.Blocks.JEFFERY_IMMUNE)));
+		}).setBlockBreakPredicate((targetBlock) -> !targetBlock.is(CATags.Blocks.JEFFERY_IMMUNE)).setSound(CASoundEvents.ROBO_JEFFERY_PISTON_LEAP_LAUNCH::get, CASoundEvents.ROBO_JEFFERY_PISTON_LEAP_LAND::get, 1.0F));
 		this.targetSelector.addGoal(1, new NearestAttackableTargetGoal<PlayerEntity>(this, PlayerEntity.class, false));
 		this.targetSelector.addGoal(1, new NearestAttackableTargetGoal<VillagerEntity>(this, VillagerEntity.class, false));
 		this.targetSelector.addGoal(1, new NearestAttackableTargetGoal<IronGolemEntity>(this, IronGolemEntity.class, false));
@@ -158,6 +162,12 @@ public class RoboJefferyEntity extends AnimatableBossEntity {
 	@Override
 	public void tick() {
 		super.tick();
+
+		if (leapBeginAnim.isPlaying() && leapBeginAnim.hasAnimationFinished()) {
+			for (int angle = 0; angle < 360; angle++) {
+				level.addParticle(ParticleTypes.CAMPFIRE_SIGNAL_SMOKE, getX() + 0.5D, getY() + 1.0D, getZ() + 0.5D, Math.cos(angle) * 0.75D, 0, Math.sin(angle) * 0.75D);
+			}
+		}
 	}
 
 	@Override
@@ -165,6 +175,15 @@ public class RoboJefferyEntity extends AnimatableBossEntity {
 		super.aiStep();
 
 		if (MathUtil.isBetween(leftPunchAnim.getWrappedAnimProgress(), 15.6D, 18.1D) || MathUtil.isBetween(rightPunchAnim.getWrappedAnimProgress(), 15.6D, 18.1D)) CAScreenShakeEntity.shakeScreen(level, position(), 15.0F, 0.1F, 5, 20); // Cause it's part of the AI n stuff :p
+		if (MathUtil.isBetween(leapMidairAnim.getWrappedAnimProgress(), 1.0D, 2.0D)) CAScreenShakeEntity.shakeScreen(level, position(), 115.0F, 0.265F, 7, 200);
+	}
+
+	@Override
+	protected void onSpawn(boolean hasAlreadyDied) {
+		if (!hasAlreadyDied && level.isClientSide) {
+			SoundUtil.playIdleSoundAsTickable(CASoundEvents.ROBO_JEFFERY_IDLE.get(), this);
+			SoundUtil.playWalkingSoundAsTickable(CASoundEvents.ROBO_JEFFERY_WALK.get(), this);
+		}
 	}
 
 	@Override
@@ -177,10 +196,10 @@ public class RoboJefferyEntity extends AnimatableBossEntity {
 			double xOffset = facingDir.equals(Axis.X) ? 1 : 0;
 			double zOffset = facingDir.equals(Axis.Z) ? 1 : 0;
 			
-			if (MathUtil.isBetween(deathAnim.getWrappedAnimProgress(), 29, 77)) CAScreenShakeEntity.shakeScreen(level, position(), 260F, (float) (deathAnim.getWrappedAnimProgress() / 100F) / 6, 2, 240);
+			if (MathUtil.isBetween(deathAnim.getWrappedAnimProgress(), 29, 77)) CAScreenShakeEntity.shakeScreen(level, position(), 560F, (float) (deathAnim.getWrappedAnimProgress() / 100F) / 6, 2, 410);
 			
 			if (deathAnim.getWrappedAnimProgress() == 75) {
-				CAScreenShakeEntity.shakeScreen(level, position(), 360F, 0.45F, 5, 300);
+				CAScreenShakeEntity.shakeScreen(level, position(), 960F, 0.45F, 5, 480);
 				
 				for (int angleDeg = 0; angleDeg < 360; angleDeg++) {
 					for (int rep = 0; rep < 6; rep++) {
@@ -233,6 +252,32 @@ public class RoboJefferyEntity extends AnimatableBossEntity {
 	@Override
 	public boolean ignoreExplosion() {
 		return true;
+	}
+
+	@Override
+	protected SoundEvent getHurtSound(DamageSource pDamageSource) {
+		SoundEvent standardDamageSound = CASoundEvents.ROBO_JEFFERY_DAMAGE_V1.get();
+		SoundEvent criticalHitDamageSound = CASoundEvents.ROBO_JEFFERY_DAMAGE_V4.get();
+		SoundEvent smashAttackingDamageSound = CASoundEvents.ROBO_JEFFERY_DAMAGE_V3.get();
+		SoundEvent leapAttackingDamageSound = CASoundEvents.ROBO_JEFFERY_DAMAGE_V2.get();
+		float lastDamageAmount = getLastDamageAmount();
+
+		return lastDamageAmount >= 50.0F ? criticalHitDamageSound : getAttackID() == SMASH_ATTACK_ID ? smashAttackingDamageSound : getAttackID() == LEAP_ATTACK_ID ? leapAttackingDamageSound : standardDamageSound;
+	}
+
+	@Override
+	protected SoundEvent getDeathSound() {
+		return CASoundEvents.ROBO_JEFFERY_DEATH.get();
+	}
+
+	@Override
+	protected float getSoundVolume() {
+		return super.getSoundVolume() + 1.25F;
+	}
+
+	@Override
+	protected float getVoicePitch() {
+		return isDeadOrDying() ? 1.015F : super.getVoicePitch();
 	}
 
 	@Override

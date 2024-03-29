@@ -12,6 +12,7 @@ import io.github.chaosawakens.common.entity.misc.CAScreenShakeEntity;
 import io.github.chaosawakens.common.registry.CASoundEvents;
 import io.github.chaosawakens.common.util.EnumUtil.EntType;
 import io.github.chaosawakens.common.util.MathUtil;
+import io.github.chaosawakens.common.util.SoundUtil;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.*;
@@ -40,8 +41,8 @@ public class EntEntity extends AnimatableMonsterEntity {
 	private final WrappedAnimationController<EntEntity> mainController = createMainMappedController("entmaincontroller");
 	private final WrappedAnimationController<EntEntity> attackController = createMappedController("entattackcontroller", this::attackPredicate);
 	private final WrappedAnimationController<EntEntity> ambientController = createMappedController("entambientcontroller", this::ambientPredicate);
-	private final SingletonAnimationBuilder alwaysPlayAnim = new SingletonAnimationBuilder(this, "Always Play", EDefaultLoopTypes.LOOP).setWrappedController(ambientController);
 	private final SingletonAnimationBuilder idleAnim = new SingletonAnimationBuilder(this, "Idle", EDefaultLoopTypes.LOOP);
+	private final SingletonAnimationBuilder idleExtrasAnim = new SingletonAnimationBuilder(this, "Idle Extras", EDefaultLoopTypes.LOOP).setWrappedController(ambientController);
 	private final SingletonAnimationBuilder walkAnim = new SingletonAnimationBuilder(this, "Walk", EDefaultLoopTypes.LOOP);
 	private final SingletonAnimationBuilder deathAnim = new SingletonAnimationBuilder(this, "Death", EDefaultLoopTypes.PLAY_ONCE).setWrappedController(attackController);
 	private final SingletonAnimationBuilder leftPunchAnim = new SingletonAnimationBuilder(this, "Left Punch", EDefaultLoopTypes.PLAY_ONCE).setWrappedController(attackController);
@@ -109,10 +110,10 @@ public class EntEntity extends AnimatableMonsterEntity {
 	@Override
 	protected void registerGoals() {
 		this.goalSelector.addGoal(0, new AnimatableMoveToTargetGoal(this, 1, 3));
-		this.targetSelector.addGoal(0, new AnimatableMeleeGoal(this, null, PUNCH_ATTACK_ID, 20.5D, 22.4D, 2).pickBetweenAnimations(() -> leftPunchAnim, () -> rightPunchAnim));
-		this.targetSelector.addGoal(0, new AnimatableAOEGoal(this, () -> smashAttackAnim, SMASH_ATTACK_ID, 21.6D, 22.6D, 5.0D, 1, 18, false, false, true, 60));
-		this.targetSelector.addGoal(0, new AnimatableAOEGoal(this, () -> smashAttackAnim, SMASH_ATTACK_ID, 21.6D, 22.6D, 5.0D, 2, 10, false, false, true, 45));
-		this.targetSelector.addGoal(0, new AnimatableAOEGoal(this, () -> smashAttackAnim, SMASH_ATTACK_ID, 21.6D, 22.6D, 5.0D, 4, 2, false, false, true, 35));
+		this.targetSelector.addGoal(0, new AnimatableMeleeGoal(this, null, PUNCH_ATTACK_ID, 20.5D, 22.4D, 2).pickBetweenAnimations(() -> leftPunchAnim, () -> rightPunchAnim).soundOnStart(CASoundEvents.ENT_TREE_PUNCH::get, 0.4F));
+		this.targetSelector.addGoal(0, new AnimatableAOEGoal(this, () -> smashAttackAnim, SMASH_ATTACK_ID, 21.6D, 22.6D, 5.0D, 1, 18, false, false, true, 60).soundOnStart(CASoundEvents.ENT_ENT_SMASH::get, 1.0F));
+		this.targetSelector.addGoal(0, new AnimatableAOEGoal(this, () -> smashAttackAnim, SMASH_ATTACK_ID, 21.6D, 22.6D, 5.0D, 2, 10, false, false, true, 45).soundOnStart(CASoundEvents.ENT_ENT_SMASH::get, 1.0F));
+		this.targetSelector.addGoal(0, new AnimatableAOEGoal(this, () -> smashAttackAnim, SMASH_ATTACK_ID, 21.6D, 22.6D, 5.0D, 4, 2, false, false, true, 35).soundOnStart(CASoundEvents.ENT_ENT_SMASH::get, 1.0F));
 		this.targetSelector.addGoal(1, new NearestAttackableTargetGoal<>(this, PlayerEntity.class, false));
 		this.targetSelector.addGoal(1, new NearestAttackableTargetGoal<>(this, IronGolemEntity.class, false));
 		this.targetSelector.addGoal(1, new NearestAttackableTargetGoal<>(this, SheepEntity.class, false));
@@ -157,8 +158,16 @@ public class EntEntity extends AnimatableMonsterEntity {
 	}
 
 	@Override
+	protected void onSpawn(boolean hasAlreadyDied) {
+		if (!hasAlreadyDied && level.isClientSide) {
+			SoundUtil.playIdleSoundAsTickable(CASoundEvents.ENT_IDLE.get(), this);
+			SoundUtil.playWalkingSoundAsTickable(CASoundEvents.ENT_WALK.get(), this);
+		}
+	}
+
+	@Override
 	protected SoundEvent getHurtSound(DamageSource damageSource) {
-		return CASoundEvents.ENT_HURT.get();
+		return CASoundEvents.ENT_DAMAGE.get();
 	}
 
 	@Override
@@ -168,12 +177,18 @@ public class EntEntity extends AnimatableMonsterEntity {
 
 	@Override
 	protected void playStepSound(BlockPos blockPos, BlockState blockState) {
-		if (!blockState.getMaterial().isLiquid()) playSound(CASoundEvents.ENT_WALK.get(), getVoicePitch() * 0.30F, getSoundVolume() * 1);
+	}
+
+	@Override
+	protected void playHurtSound(DamageSource pSource) {
+		SoundEvent hurtSound = getHurtSound(pSource);
+
+		if (hurtSound != null) playSound(hurtSound, 0.2F, getVoicePitch());
 	}
 
 	@Override
 	protected float getVoicePitch() {
-		return 0.4F;
+		return isDeadOrDying() ? super.getVoicePitch() * 1.32F : super.getVoicePitch();
 	}
 
 	@Override
@@ -237,6 +252,6 @@ public class EntEntity extends AnimatableMonsterEntity {
 	protected void handleBaseAnimations() {
 		super.handleBaseAnimations();
 
-		if (alwaysPlayAnim != null && !isDeadOrDying()) playAnimation(alwaysPlayAnim, false);
+		if (idleExtrasAnim != null && !isDeadOrDying()) playAnimation(idleExtrasAnim, false);
 	}
 }

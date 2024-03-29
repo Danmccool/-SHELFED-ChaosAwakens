@@ -4,7 +4,8 @@ import io.github.chaosawakens.api.animation.IAnimatableEntity;
 import io.github.chaosawakens.api.animation.IAnimationBuilder;
 import io.github.chaosawakens.api.animation.SingletonAnimationBuilder;
 import io.github.chaosawakens.api.animation.WrappedAnimationController;
-import io.github.chaosawakens.client.sounds.tickable.robo.RoboPounderTickableWalkSound;
+import io.github.chaosawakens.client.sounds.tickable.robo.robopounder.RoboPounderTickableIdleSound;
+import io.github.chaosawakens.client.sounds.tickable.robo.robopounder.RoboPounderTickableWalkSound;
 import io.github.chaosawakens.common.entity.ai.AnimatableMoveToTargetGoal;
 import io.github.chaosawakens.common.entity.ai.goals.hostile.AnimatableAOEGoal;
 import io.github.chaosawakens.common.entity.ai.goals.hostile.AnimatableMeleeGoal;
@@ -18,7 +19,7 @@ import io.github.chaosawakens.common.util.BlockPosUtil;
 import io.github.chaosawakens.common.util.EntityUtil;
 import io.github.chaosawakens.common.util.MathUtil;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
-import net.minecraft.block.BlockState;
+import net.minecraft.client.Minecraft;
 import net.minecraft.entity.*;
 import net.minecraft.entity.ai.attributes.AttributeModifierMap;
 import net.minecraft.entity.ai.attributes.Attributes;
@@ -36,7 +37,6 @@ import net.minecraft.network.datasync.DataSerializers;
 import net.minecraft.network.datasync.EntityDataManager;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.SoundEvent;
-import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
 import software.bernie.geckolib3.core.PlayState;
@@ -302,6 +302,13 @@ public class RoboPounderEntity extends AnimatableMonsterEntity {
 		handleIntervalSounds();
 	}
 
+	@Override
+	protected void customServerAiStep() {
+		super.customServerAiStep();
+
+
+	}
+
 	private void handleRageRun() {
 		if (isRageRunning() && !isDeadOrDying()) {
 			setRageRunAttributes();
@@ -433,6 +440,14 @@ public class RoboPounderEntity extends AnimatableMonsterEntity {
 	}
 
 	@Override
+	protected void onSpawn(boolean hasAlreadyDied) {
+		if (!hasAlreadyDied && level.isClientSide) {
+			Minecraft.getInstance().getSoundManager().queueTickingSound(new RoboPounderTickableIdleSound(CASoundEvents.ROBO_POUNDER_IDLE.get(), this).setCriticalSound(new RoboPounderTickableIdleSound(random.nextBoolean() ? CASoundEvents.ROBO_POUNDER_CRITICAL_DAMAGE.get() : CASoundEvents.ROBO_POUNDER_CRITICAL_DAMAGE_RADIO.get(), this)));
+			Minecraft.getInstance().getSoundManager().queueTickingSound(new RoboPounderTickableWalkSound(CASoundEvents.ROBO_POUNDER_WALK.get(), this).setRageRunSound(new RoboPounderTickableWalkSound(CASoundEvents.ROBO_POUNDER_RAGE_RUN.get(), this)));
+		}
+	}
+
+	@Override
 	protected void tickDeath() {
 		super.tickDeath();
 
@@ -515,16 +530,37 @@ public class RoboPounderEntity extends AnimatableMonsterEntity {
 	}
 
 	@Override
-	protected void playStepSound(BlockPos pPos, BlockState pBlock) {
-		RoboPounderTickableWalkSound rpws = new RoboPounderTickableWalkSound(CASoundEvents.ROBO_POUNDER_WALK.get(), this);
-		rpws.playSound();
-
-		playSound(CASoundEvents.ROBO_POUNDER_WALK.get(), 1.0F, 1.0F);
-	}
-
-	@Override
 	protected SoundEvent getHurtSound(DamageSource pDamageSource) {
-		return super.getHurtSound(pDamageSource);
+		SoundEvent standardDamageSound = CASoundEvents.ROBO_POUNDER_DAMAGE_V1.get();
+		SoundEvent transitionDamageSound = CASoundEvents.ROBO_POUNDER_DAMAGE_V4.get();
+		SoundEvent rageRunDamageSound = CASoundEvents.ROBO_POUNDER_DAMAGE_V3.get();
+		SoundEvent halfHealthDamageSound = CASoundEvents.ROBO_POUNDER_DAMAGE_V2.get();
+		SoundEvent defaultDamageSound = isRageRunning() ? rageRunDamageSound : standardDamageSound;
+		boolean hasPlayedTransitionDamageSound = false;
+		boolean hasPlayedHalfHealthDamageSound = false;
+		float updatedHealth = getHealth() - getLastDamageAmount();
+
+		if (updatedHealth <= 50.0F && !hasPlayedTransitionDamageSound) {
+			hasPlayedTransitionDamageSound = true;
+
+			return transitionDamageSound;
+		} else if (getHealth() > 50.0F && hasPlayedTransitionDamageSound) {
+			hasPlayedTransitionDamageSound = false;
+
+			return defaultDamageSound;
+		}
+
+		if (updatedHealth <= getMaxHealth() / 2 && !hasPlayedHalfHealthDamageSound) {
+			hasPlayedHalfHealthDamageSound = true;
+
+			return halfHealthDamageSound;
+		} else if (getHealth() > getMaxHealth() / 2 && hasPlayedHalfHealthDamageSound) {
+			hasPlayedHalfHealthDamageSound = false;
+
+			return defaultDamageSound;
+		}
+
+		return defaultDamageSound;
 	}
 
 	@Override
@@ -558,7 +594,7 @@ public class RoboPounderEntity extends AnimatableMonsterEntity {
 		if (getWalkAnim() != null && isMoving() && !isAttacking() && !shouldTaunt() && !isDeadOrDying()) playAnimation(getWalkAnim(), false);
 		if (shouldTaunt() && !isAttacking() && !isDeadOrDying()) playAnimation(tauntAnim, false);
 		
-		double attackSpeedMult = getHealth() <= 50.0F ? 1.25D : 1.0D;
+		double attackSpeedMult = getHealth() <= 50.0F ? 1.15D : 1.0D;
 		double dashAttackSpeedMult = MathUtil.isBetween(dashAttackAnim.getWrappedAnimProgress(), 7.6, 29.2) ? 1.325D : MathUtil.isBetween(dashAttackAnim.getWrappedAnimProgress(), 29.2D, 35.6D) ? 0.02D : MathUtil.isBetween(dashAttackAnim.getWrappedAnimProgress(), 35.6D, 58.4D) ? 2.0D : 0.76D;
 
 		leftPunchAnim.setAnimSpeed(attackSpeedMult);
