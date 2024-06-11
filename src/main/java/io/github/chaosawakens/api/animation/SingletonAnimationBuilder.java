@@ -46,7 +46,14 @@ import javax.annotation.Nullable;
  * 	 <td>Absent</td>
  * 	 <td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;No</td>
  * </tr>
- * 
+ *
+ * <tr>
+ * 	 <td>Animation Length (Chaos Awakens)</td>
+ * 	 <td>Present</td>
+ * 	 <td>Present</td>
+ * 	 <td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;No</td>
+ * </tr>
+ *
  * <tr>
  * 	 <td>Animation Length (Geckolib)</td>
  * 	 <td>Present</td>
@@ -81,12 +88,19 @@ import javax.annotation.Nullable;
  * 	 <td>Present</td>
  * 	 <td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;No</td>
  * </tr>
- * 
+ *
+ * <tr>
+ *   <td>Animation Loop Type (Chaos Awakens)</td>
+ *   <td>Present</td>
+ *   <td>Present</td>
+ *   <td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;No</td>
+ * </tr>
+ *
  * <tr>
  *   <td>Animation Loop Type (Geckolib)</td>
  *   <td>Present</td>
  *   <td>Present</td>
- *   <td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Yes</td>
+ *   <td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;No</td>
  * </tr>
  * 
  * <tr>
@@ -120,7 +134,7 @@ public class SingletonAnimationBuilder implements IAnimationBuilder {
 	private final String animName;
 	private double animSpeedMultiplier = 1.0D;
 	private ILoopType loopType = EDefaultLoopTypes.PLAY_ONCE;
-	private Animation heldAnim;
+	private final Animation heldAnim;
 
 	public SingletonAnimationBuilder(IAnimatableEntity owner, String animName) {
 		this.owner = owner;
@@ -180,6 +194,11 @@ public class SingletonAnimationBuilder implements IAnimationBuilder {
 		return this;
 	}
 
+	public SingletonAnimationBuilder setLoopType(ILoopType loopType) {
+		this.loopType = loopType;
+		return this;
+	}
+
 	@Override
 	public WrappedAnimationController<? extends IAnimatableEntity> getWrappedController() {
 		return targetController;
@@ -188,10 +207,6 @@ public class SingletonAnimationBuilder implements IAnimationBuilder {
 	@Override
 	public IAnimatableEntity getOwner() {
 		return owner;
-	}
-
-	public void setLoopType(ILoopType loopType) {
-		this.loopType = loopType;
 	}
 
 	@Override
@@ -214,7 +229,7 @@ public class SingletonAnimationBuilder implements IAnimationBuilder {
 		return targetController.isAnimationFinished(this)
 				|| (isPlaying() && targetController.getAnimationProgressTicks() >= getWrappedAnimLength()
 					&& (targetController.getAnimationState() == ExpandedAnimationState.RUNNING
-							|| targetController.getAnimationState() == ExpandedAnimationState.TRANSITIONING));
+							|| targetController.getAnimationState() == ExpandedAnimationState.TRANSITIONING || targetController.getAnimationState() == ExpandedAnimationState.STOPPED));
 	}
 
 	@Override

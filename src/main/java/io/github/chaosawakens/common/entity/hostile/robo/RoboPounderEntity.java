@@ -14,8 +14,7 @@ import io.github.chaosawakens.common.entity.ai.goals.hostile.robo.robopounder.Ro
 import io.github.chaosawakens.common.entity.base.AnimatableMonsterEntity;
 import io.github.chaosawakens.common.entity.misc.CAScreenShakeEntity;
 import io.github.chaosawakens.common.registry.CASoundEvents;
-import io.github.chaosawakens.common.registry.CATags;
-import io.github.chaosawakens.common.util.BlockPosUtil;
+import io.github.chaosawakens.common.registry.CATeams;
 import io.github.chaosawakens.common.util.EntityUtil;
 import io.github.chaosawakens.common.util.MathUtil;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
@@ -35,6 +34,7 @@ import net.minecraft.item.Items;
 import net.minecraft.network.datasync.DataParameter;
 import net.minecraft.network.datasync.DataSerializers;
 import net.minecraft.network.datasync.EntityDataManager;
+import net.minecraft.scoreboard.Team;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.SoundEvent;
 import net.minecraft.util.math.MathHelper;
@@ -43,6 +43,8 @@ import software.bernie.geckolib3.core.PlayState;
 import software.bernie.geckolib3.core.builder.ILoopType.EDefaultLoopTypes;
 import software.bernie.geckolib3.core.event.predicate.AnimationEvent;
 import software.bernie.geckolib3.core.manager.AnimationFactory;
+
+import javax.annotation.Nullable;
 
 public class RoboPounderEntity extends AnimatableMonsterEntity {
 	private final AnimationFactory factory = new AnimationFactory(this);
@@ -67,7 +69,7 @@ public class RoboPounderEntity extends AnimatableMonsterEntity {
 	private final SingletonAnimationBuilder leftStompAnim = new SingletonAnimationBuilder(this, "Left Leg Attack", EDefaultLoopTypes.PLAY_ONCE).setWrappedController(attackController);
 	private final SingletonAnimationBuilder groundSlamAnim = new SingletonAnimationBuilder(this, "Heavy AoE Attack", EDefaultLoopTypes.PLAY_ONCE).setWrappedController(attackController);
 	private final SingletonAnimationBuilder rageBeginAnim = new SingletonAnimationBuilder(this, "Rage Begin", EDefaultLoopTypes.PLAY_ONCE).setWrappedController(attackController);
-	private final SingletonAnimationBuilder rageRunAnim = new SingletonAnimationBuilder(this, "Rage Run", EDefaultLoopTypes.LOOP).setWrappedController(attackController);
+	private final SingletonAnimationBuilder rageRunAnim = new SingletonAnimationBuilder(this, "Rage Run", EDefaultLoopTypes.LOOP).setWrappedController(attackController).setLoopType(EDefaultLoopTypes.HOLD_ON_LAST_FRAME);
 	private final SingletonAnimationBuilder rageCooldownAnim = new SingletonAnimationBuilder(this, "Cooldown", EDefaultLoopTypes.PLAY_ONCE).setWrappedController(attackController);
 	private final SingletonAnimationBuilder rageCrashAnim = new SingletonAnimationBuilder(this, "Rage Crash", EDefaultLoopTypes.PLAY_ONCE).setWrappedController(attackController);
 	private final SingletonAnimationBuilder rageCrashRestartAnim = new SingletonAnimationBuilder(this, "Rage Crash Restart", EDefaultLoopTypes.PLAY_ONCE).setWrappedController(attackController);
@@ -127,7 +129,7 @@ public class RoboPounderEntity extends AnimatableMonsterEntity {
 	protected void registerGoals() {
 		float defaultAttackVoicePitch = getHealth() <= 50.0F ? 1.25F : 1.0F; //TODO Proper updates in goals
 
-		this.goalSelector.addGoal(0, new AnimatableMoveToTargetGoal(this, 1, 3) {
+/*		this.goalSelector.addGoal(0, new AnimatableMoveToTargetGoal(this, 1, 3) {
 			@Override
 			public boolean canUse() {
 				return super.canUse() && !shouldTaunt();
@@ -137,7 +139,7 @@ public class RoboPounderEntity extends AnimatableMonsterEntity {
 			public boolean canContinueToUse() {
 				return super.canContinueToUse() && !shouldTaunt();
 			}
-		});
+		}); */
 		this.targetSelector.addGoal(0, new AnimatableMeleeGoal(this, null, PUNCH_ATTACK_ID, 14.2D, 17.3D, 95.0D, 3, 10, (owner) -> EntityUtil.getAllEntitiesAround(owner, 6.0D, 6.0D, 6.0D, 6.0D).size() <= 6).pickBetweenAnimations(() -> leftPunchAnim, () -> rightPunchAnim).soundOnStart(CASoundEvents.ROBO_POUNDER_PISTON_PUNCH, defaultAttackVoicePitch));
 		this.targetSelector.addGoal(0, new AnimatableMeleeGoal(this, null, SWING_ATTACK_ID, 12D, 14D, 245.0D, 3, 10, (owner) -> EntityUtil.getAllEntitiesAround(owner, 6.0D, 6.0D, 6.0D, 6.0D).size() >= 3 && EntityUtil.getAllEntitiesAround(owner, 6.0D, 6.0D, 6.0D, 6.0D).size() <= 8).pickBetweenAnimations(() -> leftSwingAnim, () -> rightSwingAnim).soundOnStart(CASoundEvents.ROBO_POUNDER_SIDE_SWEEP, defaultAttackVoicePitch));
 		this.targetSelector.addGoal(0, new AnimatableMeleeGoal(this, null, SWING_ATTACK_ID, 12D, 14D, 245.0D, 5, 50).pickBetweenAnimations(() -> leftSwingAnim, () -> rightSwingAnim).soundOnStart(CASoundEvents.ROBO_POUNDER_SIDE_SWEEP, defaultAttackVoicePitch));
@@ -233,7 +235,7 @@ public class RoboPounderEntity extends AnimatableMonsterEntity {
 		else return MathHelper.nextInt(random, 350, 700);
 	}
 	
-	public int getRageRunSlideOffset() {
+	public int getRageRunFrictionOffset() {
 		if (MathUtil.isBetween(getHealth(), 250.0F, getMaxHealth() - 1)) return MathHelper.nextInt(random, 4, 8);
 		else if (MathUtil.isBetween(getHealth(), 200.0F, 250.0F)) return MathHelper.nextInt(random, 4, 9);
 		else if (MathUtil.isBetween(getHealth(), 150.0F, 200.0F)) return MathHelper.nextInt(random, 4, 9);
@@ -302,33 +304,12 @@ public class RoboPounderEntity extends AnimatableMonsterEntity {
 		handleIntervalSounds();
 	}
 
-	@Override
-	protected void customServerAiStep() {
-		super.customServerAiStep();
-
-
-	}
-
 	private void handleRageRun() {
 		if (isRageRunning() && !isDeadOrDying()) {
 			setRageRunAttributes();
 			if (getRageRunDuration() == 0) setRageRunDuration(getRageRunDurationStaged());
 			updateRageRunDuration();
-			handleRageRunMechanics();
 		} else setRageRunDuration(0);
-	}
-
-	private void handleRageRunMechanics() {
-		if (isRageRunning() && !isDeadOrDying()) {
-			handleRageRunCollision();
-			if (isPlayingAnimation(rageRunAnim)) {
-				if (tickCount % 8 == 0) CAScreenShakeEntity.shakeScreen(level, position(), 35.0F, 0.08F, 5, 20);
-			}
-		}
-	}
-	
-	private void handleRageRunCollision() {
-		BlockPosUtil.destroyCollidingBlocksWithOffset(this, getRandom().nextBoolean(), 0.05D, 0, 0.05D, (targetBlock) -> !targetBlock.is(CATags.Blocks.POUNDER_IMMUNE));
 	}
 	
 	public void setRageRunAttributes() {
@@ -372,11 +353,6 @@ public class RoboPounderEntity extends AnimatableMonsterEntity {
 	}
 
 	private void handleIntervalSounds() {
-		if (isMoving() && isPlayingAnimation(rageRunAnim)) {
-			if (rageRunAnim.getWrappedAnimProgress() % 5 == 0) {
-		//		playSound(CASoundEvents.ROBO_POUNDER_RAGE_RUN.get(), 2.0F, getVoicePitch()); //TODO TickableSound impl
-			}
-		}
 	}
 
 	@Override
@@ -468,10 +444,11 @@ public class RoboPounderEntity extends AnimatableMonsterEntity {
 	@Override
 	protected void jumpFromGround() {
 	}
-	
+
+	@Nullable
 	@Override
-	public boolean isAlliedTo(Entity pEntity) {
-		return pEntity.getDisplayName().getString().contains("Robo");
+	public Team getTeam() {
+		return CATeams.ROBO_TEAM;
 	}
 
 	@Override
@@ -482,6 +459,16 @@ public class RoboPounderEntity extends AnimatableMonsterEntity {
 		case DASH_ATTACK_ID: return super.getMeleeAttackReach(target) * 1.2F;
 		case RAGE_RUN_ATTACK_ID: return super.getMeleeAttackReach(target) * 0.65F;
 		}
+	}
+
+	@Override
+	public int getHeadRotSpeed() {
+		return isRageRunning() ? 360 : super.getHeadRotSpeed();
+	}
+
+	@Override
+	public int getMaxHeadXRot() {
+		return isRageRunning() ? 360 : super.getMaxHeadXRot();
 	}
 
 	@Override
